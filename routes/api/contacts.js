@@ -8,8 +8,8 @@ const validationRulesPost = checkSchema({
   name: {
     in: ["body"],
     notEmpty: true,
+    trim: true,
     errorMessage: "Пожалуйста введите имя!",
-    not: true,
     isLength: {
       options: {max: 25},
       errorMessage: "Превышен лимит. Максимальная длинна имени 25 символов."
@@ -17,19 +17,17 @@ const validationRulesPost = checkSchema({
     matches: {
       options: ["^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"],
       errorMessage: "Имя может содержать только буквы, тире, пробелы, апостроф."
-    },
-    trim: true
+    }
   },
   phone: {
     in: ["body"],
     notEmpty: true,
+    trim: true,
     errorMessage: "Пожалуйста введите номер!",
-    not: true,
     isLength: {
       options: {min: 10, max: 13},
       errorMessage:
-        "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок.",
-      not: true
+        "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок."
     },
     matches: {
       options: [
@@ -47,8 +45,7 @@ const validationRulesPost = checkSchema({
           )
         }
       }
-    },
-    trim: true
+    }
   },
   email: {
     in: ["body"],
@@ -72,7 +69,7 @@ const validationRulesPost = checkSchema({
   }
 })
 
-const validationRulesPut = checkSchema({
+const validationRulesPatch = checkSchema({
   name: {
     in: ["body"],
     if: {options: value => value},
@@ -88,32 +85,31 @@ const validationRulesPut = checkSchema({
   },
   phone: {
     in: ["body"],
+    trim: true,
     if: {options: value => value},
     isLength: {
       options: {min: 10, max: 13},
       errorMessage:
         "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок."
     },
-    not: true,
     matches: {
       options: [
         "^([+]\\d{2})?\\s?[(]?\\d{3}[)]?\\s?\\d{3}[-]?\\d{2}[-]?\\d{2}$"
       ],
       errorMessage:
         "Введите номер телефона в формате:  +01 (234) 567-89-99, +01 (234) 5678999, +012345678999, 0123456789"
-    },
-    trim: true
+    }
   },
   email: {
     in: ["body"],
+    trim: true,
     if: {options: value => value},
     isEmail: {
       args: true,
       errorMessage:
         "Введите действительный электронный адрес в формате 'имя_пользователя@имя_домена' "
     },
-    normalizeEmail: true,
-    trim: true
+    normalizeEmail: true
   }
 })
 
@@ -122,10 +118,7 @@ const validate = validations => {
     await Promise.all(validations.map(validation => validation.run(req)))
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      next(BadRequest(errors.array()))
-      // res.status(400).json({
-      //   errors: errors.array(),
-      // })
+      return next(BadRequest(errors.array()))
     }
     return next()
   }
@@ -177,7 +170,7 @@ router.delete("/:contactId", async (req, res, next) => {
 
 router.patch(
   "/:contactId",
-  validate(validationRulesPut),
+  validate(validationRulesPatch),
   async (req, res, next) => {
     try {
       const {contactId} = req.params
