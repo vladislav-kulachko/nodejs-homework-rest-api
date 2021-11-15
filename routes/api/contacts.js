@@ -9,6 +9,7 @@ const validationRulesPost = checkSchema({
     in: ["body"],
     notEmpty: true,
     errorMessage: "Пожалуйста введите имя!",
+    not: true,
     isLength: {
       options: {max: 25},
       errorMessage: "Превышен лимит. Максимальная длинна имени 25 символов."
@@ -23,11 +24,12 @@ const validationRulesPost = checkSchema({
     in: ["body"],
     notEmpty: true,
     errorMessage: "Пожалуйста введите номер!",
-    // isMobilePhone: true,
+    not: true,
     isLength: {
       options: {min: 10, max: 13},
       errorMessage:
-        "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок."
+        "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок.",
+      not: true
     },
     matches: {
       options: [
@@ -50,6 +52,7 @@ const validationRulesPost = checkSchema({
   },
   email: {
     in: ["body"],
+    if: {options: value => value},
     isEmail: {
       args: true,
       errorMessage:
@@ -72,7 +75,7 @@ const validationRulesPost = checkSchema({
 const validationRulesPut = checkSchema({
   name: {
     in: ["body"],
-    notEmpty: false,
+    if: {options: value => value},
     isLength: {
       options: {max: 25},
       errorMessage: "Превышен лимит. Максимальная длинна имени 25 символов."
@@ -85,13 +88,13 @@ const validationRulesPut = checkSchema({
   },
   phone: {
     in: ["body"],
-    notEmpty: false,
-    // isMobilePhone: true,
+    if: {options: value => value},
     isLength: {
       options: {min: 10, max: 13},
       errorMessage:
         "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок."
     },
+    not: true,
     matches: {
       options: [
         "^([+]\\d{2})?\\s?[(]?\\d{3}[)]?\\s?\\d{3}[-]?\\d{2}[-]?\\d{2}$"
@@ -103,7 +106,7 @@ const validationRulesPut = checkSchema({
   },
   email: {
     in: ["body"],
-    notEmpty: false,
+    if: {options: value => value},
     isEmail: {
       args: true,
       errorMessage:
@@ -172,7 +175,7 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 })
 
-router.put(
+router.patch(
   "/:contactId",
   validate(validationRulesPut),
   async (req, res, next) => {
