@@ -12,15 +12,15 @@ const listContacts = async () => {
 
 const getContactById = async contactId => {
   const list = await listContacts()
-  const contactById = list.find(({id}) => String(id) === contactId)
+  const contactById = list.find(({id}) => id === contactId)
   return contactById
 }
 
 const removeContact = async contactId => {
   const list = await listContacts()
-  const find = list.find(({id}) => String(id) === contactId)
+  const find = list.find(({id}) => id === contactId)
   if (find) {
-    const filteredList = list.filter(({id}) => String(id) !== contactId)
+    const filteredList = list.filter(({id}) => id !== contactId)
     await fs.writeFile(contactsPath, JSON.stringify(filteredList, null, 2))
   }
   return find
@@ -48,7 +48,7 @@ const updateContact = async (contactId, body) => {
       contact.email = email
     }
     const list = await listContacts()
-    const filteredList = list.filter(({id}) => String(id) !== contactId)
+    const filteredList = list.filter(({id}) => id !== contactId)
     const newList = [...filteredList, contact]
     await fs.writeFile(contactsPath, JSON.stringify(newList, null, 2))
   }
