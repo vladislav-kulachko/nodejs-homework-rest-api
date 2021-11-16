@@ -1,6 +1,5 @@
 const fs = require("fs/promises")
 const {pathToFileURL} = require("url")
-// const path = require("path")
 const randId = require("crypto").randomUUID
 
 const contactsPath = pathToFileURL("model/contacts.json")
