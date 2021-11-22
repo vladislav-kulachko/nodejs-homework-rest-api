@@ -4,7 +4,7 @@ const {NotFound} = require("http-errors")
 const operations = require("../../model/index")
 const {
   validationRulesPost,
-  validationRulesPatch
+  validationRulesPut
 } = require("../../validations/schemas")
 const validator = require("../../validations/midleware")
 
@@ -52,9 +52,9 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 })
 
-router.patch(
+router.put(
   "/:contactId",
-  validator(validationRulesPatch),
+  validator(validationRulesPut),
   async (req, res, next) => {
     try {
       const {contactId} = req.params
