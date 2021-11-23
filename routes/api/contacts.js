@@ -3,8 +3,8 @@ const router = express.Router()
 const {NotFound} = require("http-errors")
 const {
   validationRulesPost,
-  validationRulesPatch,
-  validationRulesPatchFavorite
+  validationRulesPatchFavorite,
+  validationRulesPut
 } = require("../../validations/schemas")
 const validator = require("../../validations/midleware")
 const Contact = require("../../model/contact")
@@ -55,7 +55,7 @@ router.delete("/:contactId", async (req, res, next) => {
 
 router.put(
   "/:contactId",
-  validator(validationRulesPatch),
+  validator(validationRulesPut),
   async (req, res, next) => {
     try {
       const {contactId} = req.params

@@ -70,7 +70,7 @@ const validationRulesPost = checkSchema({
   }
 })
 
-const validationRulesPatch = checkSchema({
+const validationRulesPut = checkSchema({
   name: {
     in: ["body"],
     if: {options: value => value},
@@ -126,6 +126,6 @@ const validationRulesPatchFavorite = checkSchema({
 
 module.exports = {
   validationRulesPost,
-  validationRulesPatch,
+  validationRulesPut,
   validationRulesPatchFavorite
 }
