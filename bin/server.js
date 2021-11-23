@@ -1,6 +1,16 @@
-const app = require('../app')
+const app = require("../app")
+const mongoose = require("mongoose")
 
-const PORT = process.env.PORT || 3000
+const {DB_HOST, PORT = 3000} = process.env
+
+;(async () => {
+  try {
+    await mongoose.connect(DB_HOST)
+  } catch (err) {
+    console.log(err.message)
+    process.exit(1)
+  }
+})()
 
 app.listen(PORT, () => {
   console.log(`Server running. Use our API on port: ${PORT}`)
