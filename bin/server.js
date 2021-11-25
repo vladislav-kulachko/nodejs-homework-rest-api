@@ -6,6 +6,7 @@ const {DB_HOST, PORT = 3000} = process.env
 ;(async () => {
   try {
     await mongoose.connect(DB_HOST)
+    console.log("Успешное подключение к базе данных")
   } catch (err) {
     console.log(err.message)
     process.exit(1)

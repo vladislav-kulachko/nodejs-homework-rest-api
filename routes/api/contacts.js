@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router()
+const mongoose = require("mongoose")
 const {NotFound} = require("http-errors")
 const {
   validationRulesPost,
@@ -11,8 +12,8 @@ const Contact = require("../../model/contact")
 
 router.get("/", async (req, res, next) => {
   try {
-    const contacts = await Contact.find()
-    res.status(200).json({status: "success", data: contacts})
+    const data = await Contact.find()
+    res.status(200).json({status: "success", data})
   } catch (err) {
     next(err)
   }
@@ -21,11 +22,11 @@ router.get("/", async (req, res, next) => {
 router.get("/:contactId", async (req, res, next) => {
   try {
     const {contactId} = req.params
-    await Contact.findById(contactId, (err, data) => {
-      if (err || data === null) {
-        next(NotFound(`Contact with id ${contactId} not found`))
-      } else res.status(200).json({status: "success", data})
-    }).clone()
+    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+      throw new NotFound(`Contact with id ${contactId} not found`)
+    }
+    const data = await Contact.findById(contactId)
+    res.status(200).json({status: "success", data})
   } catch (err) {
     next(err)
   }
@@ -33,8 +34,8 @@ router.get("/:contactId", async (req, res, next) => {
 
 router.post("/", validator(validationRulesPost), async (req, res, next) => {
   try {
-    const addedContact = await Contact.create(req.body)
-    res.status(201).json({status: "success", data: addedContact})
+    const data = await Contact.create(req.body)
+    res.status(201).json({status: "success", data})
   } catch (err) {
     next(err)
   }
@@ -43,11 +44,11 @@ router.post("/", validator(validationRulesPost), async (req, res, next) => {
 router.delete("/:contactId", async (req, res, next) => {
   try {
     const {contactId} = req.params
-    await Contact.findByIdAndDelete(contactId, (err, data) => {
-      if (err || data === null) {
-        next(NotFound(`Delete fail. Contact with id ${contactId} not found`))
-      } else res.status(200).json({status: "success", data})
-    }).clone()
+    if (!mongoose.Types.ObjectId.isValid(contactId)) {
+      throw new NotFound(`Delete fail. Contact with id ${contactId} not found`)
+    }
+    const data = await Contact.findByIdAndDelete(contactId)
+    res.status(200).json({status: "success", data})
   } catch (err) {
     next(err)
   }
@@ -59,22 +60,15 @@ router.put(
   async (req, res, next) => {
     try {
       const {contactId} = req.params
-      await Contact.findByIdAndUpdate(
-        contactId,
-        req.body,
-        {
-          returnDocument: "after"
-        },
-        (err, data) => {
-          if (err) {
-            next(
-              NotFound(
-                `Update fail. ${err} Contact with id ${contactId} not found`
-              )
-            )
-          } else res.status(200).json({status: "success", data})
-        }
-      ).clone()
+      if (!mongoose.Types.ObjectId.isValid(contactId)) {
+        throw new NotFound(
+          `Update fail. Contact with id ${contactId} not found`
+        )
+      }
+      const data = await Contact.findByIdAndUpdate(contactId, req.body, {
+        returnDocument: "after"
+      })
+      res.status(200).json({status: "success", data})
     } catch (err) {
       next(err)
     }
@@ -87,29 +81,17 @@ router.patch(
   async (req, res, next) => {
     try {
       const {contactId} = req.params
-      let contactUpd
-      await Contact.findById(contactId, (err, data) => {
-        if (err || data === null) {
-          next(
-            NotFound(
-              `Update fail. ${err} Contact with id ${contactId} not found`
-            )
-          )
-        } else {
-          contactUpd = data
-          contactUpd.favorite = req.body.favorite
-          Contact.findByIdAndUpdate(
-            contactId,
-            contactUpd,
-            {
-              returnDocument: "after"
-            },
-            (_, data) => {
-              res.status(200).json({status: "success", data})
-            }
-          )
-        }
-      }).clone()
+      if (!mongoose.Types.ObjectId.isValid(contactId)) {
+        throw new NotFound(
+          `Update fail. Contact with id ${contactId} not found`
+        )
+      }
+      const data = await Contact.findById(contactId)
+      data.favorite = req.body.favorite
+      const updData = await Contact.findByIdAndUpdate(contactId, data, {
+        returnDocument: "after"
+      })
+      res.status(200).json({status: "success", updData})
     } catch (err) {
       next(err)
     }
