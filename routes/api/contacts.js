@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const mongoose = require("mongoose")
-const {NotFound} = require("http-errors")
+const {NotFound, BadRequest} = require("http-errors")
 const {
   validationRulesPost,
   validationRulesPatchFavorite,
@@ -23,9 +23,12 @@ router.get("/:contactId", async (req, res, next) => {
   try {
     const {contactId} = req.params
     if (!mongoose.Types.ObjectId.isValid(contactId)) {
-      throw new NotFound(`Contact with id ${contactId} not found`)
+      throw new BadRequest(`Not valid id: ${contactId}`)
     }
     const data = await Contact.findById(contactId)
+    if (!data) {
+      throw new NotFound(`Contact with id: ${contactId} not found`)
+    }
     res.status(200).json({status: "success", data})
   } catch (err) {
     next(err)
@@ -45,9 +48,12 @@ router.delete("/:contactId", async (req, res, next) => {
   try {
     const {contactId} = req.params
     if (!mongoose.Types.ObjectId.isValid(contactId)) {
-      throw new NotFound(`Delete fail. Contact with id ${contactId} not found`)
+      throw new BadRequest(`Not valid id: ${contactId}`)
     }
     const data = await Contact.findByIdAndDelete(contactId)
+    if (!data) {
+      throw new NotFound(`Delete fail. Contact with id: ${contactId} not found`)
+    }
     res.status(200).json({status: "success", data})
   } catch (err) {
     next(err)
@@ -61,13 +67,16 @@ router.put(
     try {
       const {contactId} = req.params
       if (!mongoose.Types.ObjectId.isValid(contactId)) {
-        throw new NotFound(
-          `Update fail. Contact with id ${contactId} not found`
-        )
+        throw new BadRequest(`Not valid id: ${contactId}`)
       }
       const data = await Contact.findByIdAndUpdate(contactId, req.body, {
         returnDocument: "after"
       })
+      if (!data) {
+        throw new NotFound(
+          `Update fail. Contact with id: ${contactId} not found`
+        )
+      }
       res.status(200).json({status: "success", data})
     } catch (err) {
       next(err)
@@ -82,11 +91,14 @@ router.patch(
     try {
       const {contactId} = req.params
       if (!mongoose.Types.ObjectId.isValid(contactId)) {
-        throw new NotFound(
-          `Update fail. Contact with id ${contactId} not found`
-        )
+        throw new BadRequest(`Not valid id: ${contactId}`)
       }
       const data = await Contact.findById(contactId)
+      if (!data) {
+        throw new NotFound(
+          `Update fail. Contact with id: ${contactId} not found`
+        )
+      }
       data.favorite = req.body.favorite
       const updData = await Contact.findByIdAndUpdate(contactId, data, {
         returnDocument: "after"
