@@ -1,4 +1,4 @@
-const {BadRequest} = require("http-errors")
+const {BadRequest, Conflict} = require("http-errors")
 const {validationResult} = require("express-validator")
 
 const validator = validations => {
