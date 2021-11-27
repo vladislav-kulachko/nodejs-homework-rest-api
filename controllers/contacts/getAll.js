@@ -1,9 +1,8 @@
 const {Contact} = require("../../model/index")
 
 const getAll = async (req, res, next) => {
-  const {page, limit} = req.query
+  const {page = null, limit = null} = req.query
   const skip = (page - 1) * limit
-  console.log(page, limit)
   const {_id} = req.user
   const contacts = await Contact.find(
     {owner: _id},
