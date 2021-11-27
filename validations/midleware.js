@@ -6,7 +6,7 @@ const validator = validations => {
     await Promise.all(validations.map(validation => validation.run(req)))
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return next(BadRequest(errors.array()))
+      next(BadRequest(errors.array()))
     }
     return next()
   }
