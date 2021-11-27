@@ -4,23 +4,21 @@ const jwt = require("jsonwebtoken")
 const {SECRET_KEY} = process.env
 
 const authenticate = async (req, res, next) => {
-  const [bearer, token] = req.headers.authorization.split(" ")
-  if (bearer !== "Bearer") {
-    throw new Unauthorized(
-      "Вы не авторизированы. Зарегистрируйтесь или войдите."
-    )
+  if (!req.headers.authorization) {
+    throw new Unauthorized("Вы не авторизированы. Отсутствует токен.")
   }
+  const token = req.headers.authorization.split(" ")
   try {
-    const {id} = jwt.verify(token, SECRET_KEY)
+    const {id} = jwt.verify(token[1], SECRET_KEY)
     const user = await User.findById(id)
     if (!user) {
-      throw new NotFound()
+      throw new NotFound(`Пользователь с id: ${id} удален.`)
     }
     req.user = user
     next()
   } catch (err) {
     throw new Unauthorized(
-      "Вы не авторизированы. Зарегистрируйтесь или войдите."
+      "Вы не авторизированы. Зарегистрируйтесь или выполните вход."
     )
   }
 }

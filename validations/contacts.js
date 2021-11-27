@@ -24,9 +24,9 @@ const validationRulesPostContact = checkSchema({
     errorMessage: "Пожалуйста введите номер!",
     bail: true,
     isLength: {
-      options: {min: 10, max: 13},
+      options: {min: 10, max: 20},
       errorMessage:
-        "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок.",
+        "Длинна номера должна быть не менее 10 символов в сокращенном формате.",
       bail: true
     },
     matches: {
