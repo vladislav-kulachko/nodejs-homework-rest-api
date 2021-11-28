@@ -1,4 +1,4 @@
-const {NotFound, BadRequest} = require("http-errors")
+const {NotFound, BadRequest, Unauthorized} = require("http-errors")
 const {Contact} = require("../../model/index")
 const mongoose = require("mongoose")
 
@@ -8,11 +8,14 @@ const patchFavorite = async (req, res, next) => {
     throw new BadRequest(`Not valid id: ${contactId}`)
   }
   const data = await Contact.findById(contactId)
+
+  if (data.owner.valueOf() !== req.user._id.valueOf()) {
+    throw new Unauthorized(`Access denied`)
+  }
   if (!data) {
     throw new NotFound(`Update fail. Contact with id: ${contactId} not found`)
   }
-  data.favorite = req.body.favorite
-  const updData = await Contact.findByIdAndUpdate(contactId, data, {
+  const updData = await Contact.findByIdAndUpdate(contactId, req.body, {
     returnDocument: "after"
   })
   res.status(200).json({status: "success", updData})

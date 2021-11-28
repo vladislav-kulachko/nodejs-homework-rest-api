@@ -7,9 +7,9 @@ const authenticate = async (req, res, next) => {
   if (!req.headers.authorization) {
     throw new Unauthorized("Вы не авторизированы. Отсутствует токен.")
   }
-  const token = req.headers.authorization.split(" ")
+  const token = req.headers.authorization.split(" ")[1]
   try {
-    const {id} = jwt.verify(token[1], SECRET_KEY)
+    const {id} = jwt.verify(token, SECRET_KEY)
     const user = await User.findById(id)
     if (!user) {
       throw new NotFound(`Пользователь с id: ${id} удален.`)
