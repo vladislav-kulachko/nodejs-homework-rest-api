@@ -2,7 +2,7 @@ const {NotFound, BadRequest, Unauthorized} = require("http-errors")
 const {Contact} = require("../../model/index")
 const mongoose = require("mongoose")
 
-const patchFavorite = async (req, res, next) => {
+const patchFavorite = async (req, res) => {
   const {contactId} = req.params
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     throw new BadRequest(`Not valid id: ${contactId}`)

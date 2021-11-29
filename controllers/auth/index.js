@@ -2,4 +2,5 @@ const register = require("./register")
 const login = require("./login")
 const logout = require("./logout")
 const getUserAtToken = require("./getUser")
-module.exports = {register, login, logout, getUserAtToken}
+const patchUserStatus = require("./patchStatus")
+module.exports = {register, login, logout, getUserAtToken, patchUserStatus}

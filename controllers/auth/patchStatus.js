@@ -1,11 +1,11 @@
 const {User} = require("../../model/index")
 
-const getUserAtToken = async (req, res) => {
+const patchUserStatus = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1]
-  const user = await User.findOne({token}, "email subscription")
+  const user = await User.findOneAndUpdate(token, req.body, {new: true})
   res.status(200).json({
     status: "success",
     user
   })
 }
-module.exports = getUserAtToken
+module.exports = patchUserStatus

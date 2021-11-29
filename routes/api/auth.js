@@ -6,7 +6,8 @@ const {
   register,
   login,
   logout,
-  getUserAtToken
+  getUserAtToken,
+  patchUserStatus
 } = require("../../controllers/auth/index")
 const {validationRulesPostAuth} = require("../../validations/auth")
 const validator = require("../../validations/midleware")
@@ -31,5 +32,10 @@ router.get(
   "/users/current",
   controllersWrapper(authenticate),
   controllersWrapper(getUserAtToken)
+)
+router.patch(
+  "/users",
+  controllersWrapper(authenticate),
+  controllersWrapper(patchUserStatus)
 )
 module.exports = router
