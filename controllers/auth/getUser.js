@@ -1,8 +1,7 @@
 const {User} = require("../../model/index")
 
 const getUserAtToken = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1]
-  const user = await User.findOne({token}, "email subscription")
+  const user = await User.findById(req.user._id, "email subscription")
   res.status(200).json({
     status: "success",
     user
