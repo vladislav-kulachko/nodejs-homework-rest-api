@@ -7,17 +7,18 @@ const {
   login,
   logout,
   getUserAtToken,
-  patchUserStatus
+  patchUserStatus,
+  patchUserAvatar
 } = require("../../controllers/auth/index")
 const {validationRulesPostAuth} = require("../../validations/auth")
 const validator = require("../../validations/midleware")
+const upload = require("../../controllers/upload")
 
 router.post(
   "/user/signup",
   validator(validationRulesPostAuth),
   controllersWrapper(register)
 )
-
 router.post(
   "/user/signin",
   validator(validationRulesPostAuth),
@@ -37,5 +38,11 @@ router.patch(
   "/users",
   controllersWrapper(authenticate),
   controllersWrapper(patchUserStatus)
+)
+router.patch(
+  "/users/avatars",
+  controllersWrapper(authenticate),
+  upload.single("avatar"),
+  controllersWrapper(patchUserAvatar)
 )
 module.exports = router
