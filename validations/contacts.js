@@ -1,8 +1,7 @@
 const {checkSchema} = require("express-validator")
-
 const Contact = require("../model/contact")
 
-const validationRulesPost = checkSchema({
+const validationRulesPostContact = checkSchema({
   name: {
     in: ["body"],
     notEmpty: true,
@@ -25,9 +24,9 @@ const validationRulesPost = checkSchema({
     errorMessage: "Пожалуйста введите номер!",
     bail: true,
     isLength: {
-      options: {min: 10, max: 13},
+      options: {min: 10, max: 20},
       errorMessage:
-        "Длинна номера должна быть 10 символов в сокращенном формате и 13 в международном без учета скобок.",
+        "Длинна номера должна быть не менее 10 символов в сокращенном формате.",
       bail: true
     },
     matches: {
@@ -39,11 +38,9 @@ const validationRulesPost = checkSchema({
     },
     custom: {
       options: async value => {
-        const phone = await Contact.find({phone: value})
-        if (phone.length > 0) {
-          return await Promise.reject(
-            new Error(`Номер ${value} уже находится в спискe контактов`)
-          )
+        const phone = await Contact.findOne({phone: value})
+        if (phone) {
+          throw new Error(`Номер уже находится в спискe контактов`)
         }
       }
     }
@@ -51,26 +48,24 @@ const validationRulesPost = checkSchema({
   email: {
     in: ["body"],
     if: {options: value => value},
+    normalizeEmail: true,
     isEmail: {
       args: true,
       errorMessage:
         "Введите действительный электронный адрес в формате 'имя_пользователя@имя_домена' "
     },
-    normalizeEmail: true,
     custom: {
       options: async value => {
-        const email = await Contact.find({email: value})
-        if (email.length > 0) {
-          return await Promise.reject(
-            new Error(`Почта ${value} уже находится в спискe контактов`)
-          )
+        const email = await Contact.findOne({email: value})
+        if (email) {
+          throw new Error(`Почта уже находится в спискe контактов`)
         }
       }
     }
   }
 })
 
-const validationRulesPut = checkSchema({
+const validationRulesPutContact = checkSchema({
   name: {
     in: ["body"],
     if: {options: value => value},
@@ -120,12 +115,12 @@ const validationRulesPatchFavorite = checkSchema({
     notEmpty: true,
     isBoolean: true,
     toBoolean: true,
-    errorMessage: "missing field favorite"
+    errorMessage: "Недопустимое значение"
   }
 })
 
 module.exports = {
-  validationRulesPost,
-  validationRulesPut,
+  validationRulesPostContact,
+  validationRulesPutContact,
   validationRulesPatchFavorite
 }

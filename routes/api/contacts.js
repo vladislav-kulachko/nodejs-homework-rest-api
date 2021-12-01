@@ -1,113 +1,55 @@
 const express = require("express")
 const router = express.Router()
-const mongoose = require("mongoose")
-const {NotFound, BadRequest} = require("http-errors")
 const {
-  validationRulesPost,
-  validationRulesPatchFavorite,
-  validationRulesPut
-} = require("../../validations/schemas")
+  getAll,
+  getById,
+  removeById,
+  postNew,
+  patchFavorite,
+  putById
+} = require("../../controllers/contacts/index")
+const controllersWrapper = require("../../controllers/wrapper")
+const {
+  validationRulesPostContact,
+  validationRulesPutContact,
+  validationRulesPatchFavorite
+} = require("../../validations/contacts")
 const validator = require("../../validations/midleware")
-const Contact = require("../../model/contact")
+const authenticate = require("../../controllers/authenticate")
 
-router.get("/", async (req, res, next) => {
-  try {
-    const data = await Contact.find()
-    res.status(200).json({status: "success", data})
-  } catch (err) {
-    next(err)
-  }
-})
+router.get("/", controllersWrapper(authenticate), controllersWrapper(getAll))
 
-router.get("/:contactId", async (req, res, next) => {
-  try {
-    const {contactId} = req.params
-    if (!mongoose.Types.ObjectId.isValid(contactId)) {
-      throw new BadRequest(`Not valid id: ${contactId}`)
-    }
-    const data = await Contact.findById(contactId)
-    if (!data) {
-      throw new NotFound(`Contact with id: ${contactId} not found`)
-    }
-    res.status(200).json({status: "success", data})
-  } catch (err) {
-    next(err)
-  }
-})
+router.get(
+  "/:contactId",
+  controllersWrapper(authenticate),
+  controllersWrapper(getById)
+)
 
-router.post("/", validator(validationRulesPost), async (req, res, next) => {
-  try {
-    const data = await Contact.create(req.body)
-    res.status(201).json({status: "success", data})
-  } catch (err) {
-    next(err)
-  }
-})
+router.post(
+  "/",
+  controllersWrapper(authenticate),
+  validator(validationRulesPostContact),
+  controllersWrapper(postNew)
+)
 
-router.delete("/:contactId", async (req, res, next) => {
-  try {
-    const {contactId} = req.params
-    if (!mongoose.Types.ObjectId.isValid(contactId)) {
-      throw new BadRequest(`Not valid id: ${contactId}`)
-    }
-    const data = await Contact.findByIdAndDelete(contactId)
-    if (!data) {
-      throw new NotFound(`Delete fail. Contact with id: ${contactId} not found`)
-    }
-    res.status(200).json({status: "success", data})
-  } catch (err) {
-    next(err)
-  }
-})
+router.delete(
+  "/:contactId",
+  controllersWrapper(authenticate),
+  controllersWrapper(removeById)
+)
 
 router.put(
   "/:contactId",
-  validator(validationRulesPut),
-  async (req, res, next) => {
-    try {
-      const {contactId} = req.params
-      if (!mongoose.Types.ObjectId.isValid(contactId)) {
-        throw new BadRequest(`Not valid id: ${contactId}`)
-      }
-      const data = await Contact.findByIdAndUpdate(contactId, req.body, {
-        returnDocument: "after"
-      })
-      if (!data) {
-        throw new NotFound(
-          `Update fail. Contact with id: ${contactId} not found`
-        )
-      }
-      res.status(200).json({status: "success", data})
-    } catch (err) {
-      next(err)
-    }
-  }
+  controllersWrapper(authenticate),
+  validator(validationRulesPutContact),
+  controllersWrapper(putById)
 )
 
 router.patch(
   "/:contactId/favorite",
+  controllersWrapper(authenticate),
   validator(validationRulesPatchFavorite),
-  async (req, res, next) => {
-    try {
-      const {contactId} = req.params
-      if (!mongoose.Types.ObjectId.isValid(contactId)) {
-        throw new BadRequest(`Not valid id: ${contactId}`)
-      }
-      const data = await Contact.findById(contactId)
-      if (!data) {
-        throw new NotFound(
-          `Update fail. Contact with id: ${contactId} not found`
-        )
-      }
-      data.favorite = req.body.favorite
-      const updData = await Contact.findByIdAndUpdate(contactId, data, {
-        returnDocument: "after"
-      })
-      res.status(200).json({status: "success", updData})
-    } catch (err) {
-      next(err)
-    }
-  }
+  controllersWrapper(patchFavorite)
 )
 
 module.exports = router
