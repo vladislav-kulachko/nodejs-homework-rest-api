@@ -8,7 +8,9 @@ const {
   logout,
   getUserAtToken,
   patchUserStatus,
-  patchUserAvatar
+  patchUserAvatar,
+  verify,
+  resendVerify
 } = require("../../controllers/auth/index")
 const {validationRulesPostAuth} = require("../../validations/auth")
 const validator = require("../../validations/midleware")
@@ -45,4 +47,6 @@ router.patch(
   upload.single("avatar"),
   controllersWrapper(patchUserAvatar)
 )
+router.get("/users/verify/:verificationToken", controllersWrapper(verify))
+router.post("/users/verify", controllersWrapper(resendVerify))
 module.exports = router

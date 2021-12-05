@@ -11,6 +11,12 @@ const login = async (req, res) => {
       "Вы ввели неверный логин или пароль. Повторите вход или зарегистрируйтесь."
     )
   }
+  if (!user.verify) {
+    throw new Unauthorized(
+      "Пройдите верификацию. Ссылка отправлена на почту, указанную при регистрации."
+    )
+  }
+
   const payload = {id: user._id}
   const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "1h"})
   const userWithToken = await User.findByIdAndUpdate(
