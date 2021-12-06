@@ -23,7 +23,7 @@ const register = async (req, res) => {
     to: email,
     from: "vladcoool@gmail.com",
     subject: "Верификация.",
-    html: `<a href=http://localhost:3000/api/auth/users/verify/:${uuid}>Нажмите для верификации<a>`
+    html: `<a href=http://localhost:3000/api/auth/users/verify/${uuid}>Нажмите для верификации<a>`
   }
   await sgMail.send(mail)
   res.status(201).json({

@@ -20,7 +20,7 @@ const resendVerify = async (req, res) => {
     to: req.body.email,
     from: "vladcoool@gmail.com",
     subject: "Повторная верификация.",
-    html: `<a href=http://localhost:3000/api/auth/users/verify/:${uuid}>Нажмите для верификации<a>`
+    html: `<a href=http://localhost:3000/api/auth/users/verify/${uuid}>Нажмите для верификации<a>`
   }
   await sgMail.send(mail)
 }
