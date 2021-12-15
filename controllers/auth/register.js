@@ -2,7 +2,6 @@ const {Conflict} = require("http-errors")
 const gravatar = require("gravatar")
 const uuid = require("crypto").randomUUID()
 const sgMail = require("@sendgrid/mail")
-require("dotenv").config()
 const {User} = require("../../model/index")
 
 const {SG_API_KEY} = process.env

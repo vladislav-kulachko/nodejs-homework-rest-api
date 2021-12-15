@@ -1,7 +1,6 @@
 const uuid = require("crypto").randomUUID()
 const sgMail = require("@sendgrid/mail")
 const {BadRequest} = require("http-errors")
-require("dotenv").config()
 const {User} = require("../../model/index")
 
 const {SG_API_KEY} = process.env
