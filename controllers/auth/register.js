@@ -10,12 +10,12 @@ sgMail.setApiKey(SG_API_KEY)
 
 const register = async (req, res) => {
   const {email, password} = req.body
-  const avatarURL = gravatar.url(email, {s: "250", r: "x", d: "robohash"})
+  const avatarUrl = gravatar.url(email, {s: "250", r: "x", d: "robohash"})
   const result = await User.findOne({email})
   if (result) {
     throw new Conflict(`Эта почта ${email}уже используется`)
   }
-  const newUser = new User({email, avatarURL, verificationToken: uuid})
+  const newUser = new User({email, avatarUrl, verificationToken: uuid})
   newUser.setPassword(password)
   await newUser.save()
   const mail = {
